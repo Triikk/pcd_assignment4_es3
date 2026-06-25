@@ -15,41 +15,50 @@ public class ClientImpl implements Client {
 
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("localhost");
-        try (
-                Connection connection = factory.newConnection();
-                Channel channel = connection.createChannel()) {
 
-            channel.queueDeclare(QUEUE_NAME, true, false, false, null);
+        Connection connection = factory.newConnection();
+        Channel channel = connection.createChannel();
 
-            if(first){
-                channel.basicPublish("", QUEUE_NAME, null, "msg".getBytes("UTF-8"));
-            }
+        channel.queueDeclare(QUEUE_NAME, true, false, false, null);
 
-            System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
-
-            DeliverCallback deliverCallback = (consumerTag, delivery) -> {
-                String message = new String(delivery.getBody(), "UTF-8");
-                System.out.println(" [x] Received '" + message + "' by thread: " + Thread.currentThread().getName());
-
-                System.out.println("I'M IN CRITICAL SECTION");
-                try {
-                    Thread.sleep(3000);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-
-                channel.basicPublish("", QUEUE_NAME, null, message.getBytes("UTF-8"));
-                System.out.println("I'M IN CRITICAL SECTION");
-                System.out.println(" [x] Sent '" + message + "'");
-            };
-
-            boolean autoAck = true;
-            String consumerTag = channel.basicConsume(QUEUE_NAME, autoAck, deliverCallback,
-                    /* cancellation callback */ consTag -> {
-                    });
-
-            System.out.println("Consumer configured - tag: " + consumerTag);
+        if (first) {
+            channel.basicPublish("", QUEUE_NAME, null, Integer.toString(1).getBytes("UTF-8"));
         }
+
+        System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
+
+        DeliverCallback deliverCallback = (consumerTag, delivery) -> {
+            long deliveryTag = delivery.getEnvelope().getDeliveryTag();
+            int value = Integer.parseInt(new String(delivery.getBody(), "UTF-8"));
+
+            System.out.println(" [x] Received token " + value
+                    + " by thread: " + Thread.currentThread().getName());
+
+            System.out.println("---> ENTRO IN SEZIONE CRITICA (token " + value + ")");
+            try {
+                Thread.sleep(10000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            System.out.println("<--- ESCO DALLA SEZIONE CRITICA");
+
+            int next = value + 1;
+            channel.basicPublish("", QUEUE_NAME, null, Integer.toString(next).getBytes("UTF-8"));
+            System.out.println(" [x] Inviato token " + next);
+
+            channel.basicAck(deliveryTag, false);
+        };
+
+        channel.basicQos(1);  // un solo messaggio non-ackato per consumer alla volta
+
+        boolean autoAck = false;//se crasha non toglie il messaggio
+        String consumerTag = channel.basicConsume(QUEUE_NAME, autoAck, deliverCallback,
+                consTag -> {});
+
+        System.out.println("Consumer configured - tag: " + consumerTag);
+        // No close, no latch — the consumer thread keeps the JVM running.
+        // When the queue is empty, that thread simply blocks waiting for
+        // the next delivery. CTRL+C to exit.
     }
 
     @Override
