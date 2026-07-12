@@ -8,10 +8,9 @@ import com.rabbitmq.client.DeliverCallback;
 public class ClientImpl implements Client {
 
     private static final String QUEUE_NAME = "A";
-    private Resource resource;
 
     public static void main(String[] args) throws Exception {
-        boolean first = args.length == 2 && Boolean.parseBoolean(args[1]);
+        boolean first = args.length == 1 && Boolean.parseBoolean(args[0]);
 
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("localhost");
@@ -36,7 +35,7 @@ public class ClientImpl implements Client {
 
             System.out.println("---> ENTRO IN SEZIONE CRITICA (token " + value + ")");
             try {
-                Thread.sleep(10000);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -53,21 +52,9 @@ public class ClientImpl implements Client {
 
         boolean autoAck = false;//se crasha non toglie il messaggio
         String consumerTag = channel.basicConsume(QUEUE_NAME, autoAck, deliverCallback,
-                consTag -> {});
+                consTag -> {
+                });
 
         System.out.println("Consumer configured - tag: " + consumerTag);
-        // No close, no latch — the consumer thread keeps the JVM running.
-        // When the queue is empty, that thread simply blocks waiting for
-        // the next delivery. CTRL+C to exit.
-    }
-
-    @Override
-    public void send(String queueName) {
-
-    }
-
-    @Override
-    public void recv(String queueName) {
-
     }
 }
