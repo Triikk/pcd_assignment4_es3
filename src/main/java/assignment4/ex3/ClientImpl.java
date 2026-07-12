@@ -5,11 +5,13 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
 
+import java.nio.charset.StandardCharsets;
+
 public class ClientImpl implements Client {
 
     private static final String QUEUE_NAME = "A";
 
-    public static void main(String[] args) throws Exception {
+    static void main(String[] args) throws Exception {
         boolean first = args.length == 1 && Boolean.parseBoolean(args[0]);
 
         ConnectionFactory factory = new ConnectionFactory();
@@ -21,14 +23,14 @@ public class ClientImpl implements Client {
         channel.queueDeclare(QUEUE_NAME, true, false, false, null);
 
         if (first) {
-            channel.basicPublish("", QUEUE_NAME, null, Integer.toString(1).getBytes("UTF-8"));
+            channel.basicPublish("", QUEUE_NAME, null, Integer.toString(1).getBytes(StandardCharsets.UTF_8));
         }
 
         System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
 
-        DeliverCallback deliverCallback = (consumerTag, delivery) -> {
+        DeliverCallback deliverCallback = (_, delivery) -> {
             long deliveryTag = delivery.getEnvelope().getDeliveryTag();
-            int value = Integer.parseInt(new String(delivery.getBody(), "UTF-8"));
+            int value = Integer.parseInt(new String(delivery.getBody(), StandardCharsets.UTF_8));
 
             System.out.println(" [x] Received token " + value
                     + " by thread: " + Thread.currentThread().getName());
@@ -42,7 +44,7 @@ public class ClientImpl implements Client {
             System.out.println("<--- ESCO DALLA SEZIONE CRITICA");
 
             int next = value + 1;
-            channel.basicPublish("", QUEUE_NAME, null, Integer.toString(next).getBytes("UTF-8"));
+            channel.basicPublish("", QUEUE_NAME, null, Integer.toString(next).getBytes(StandardCharsets.UTF_8));
             System.out.println(" [x] Inviato token " + next);
 
             channel.basicAck(deliveryTag, false);
@@ -52,7 +54,7 @@ public class ClientImpl implements Client {
 
         boolean autoAck = false;//se crasha non toglie il messaggio
         String consumerTag = channel.basicConsume(QUEUE_NAME, autoAck, deliverCallback,
-                consTag -> {
+                _ -> {
                 });
 
         System.out.println("Consumer configured - tag: " + consumerTag);
