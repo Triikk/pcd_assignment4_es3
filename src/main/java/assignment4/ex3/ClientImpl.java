@@ -32,20 +32,19 @@ public class ClientImpl implements Client {
             long deliveryTag = delivery.getEnvelope().getDeliveryTag();
             int value = Integer.parseInt(new String(delivery.getBody(), StandardCharsets.UTF_8));
 
-            System.out.println(" [x] Received token " + value
-                    + " by thread: " + Thread.currentThread().getName());
+            System.out.println(" [x] Received token " + value + " by thread: " + Thread.currentThread().getName());
 
-            System.out.println("---> ENTRO IN SEZIONE CRITICA (token " + value + ")");
+            System.out.println("---> START OF CS (token " + value + ")");
             try {
-                Thread.sleep(1000);
+                Thread.sleep(2000);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            System.out.println("<--- ESCO DALLA SEZIONE CRITICA");
+            System.out.println("<--- OUT OF CS");
 
             int next = value + 1;
             channel.basicPublish("", QUEUE_NAME, null, Integer.toString(next).getBytes(StandardCharsets.UTF_8));
-            System.out.println(" [x] Inviato token " + next);
+            System.out.println(" [x] Sent token " + next);
 
             channel.basicAck(deliveryTag, false);
         };
@@ -53,9 +52,8 @@ public class ClientImpl implements Client {
         channel.basicQos(1);  // un solo messaggio non-ackato per consumer alla volta
 
         boolean autoAck = false;//se crasha non toglie il messaggio
-        String consumerTag = channel.basicConsume(QUEUE_NAME, autoAck, deliverCallback,
-                _ -> {
-                });
+        String consumerTag = channel.basicConsume(QUEUE_NAME, autoAck, deliverCallback, _ -> {
+        });
 
         System.out.println("Consumer configured - tag: " + consumerTag);
     }
