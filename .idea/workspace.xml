@@ -1,6 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="22a94eb8-bdc6-4459-95d7-8f98de90bb8d" name="Changes" comment="fix warnings dai dai dai">
+      <change afterPath="$PROJECT_DIR$/src/main/java/assignment4/ex3/CriticalSection.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/assignment4/ex3/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/assignment4/ex3/Client.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/assignment4/ex3/ClientImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/assignment4/ex3/Resource.java" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Gradle.pcd_assignment4_es3 [:assignment4.ex3.CriticalSection.main()].executor": "Run",
+    "git-widget-placeholder": "main"
+  }
+}]]></component>
   <component name="RunManager">
+    <configuration name="CriticalSection" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="assignment4.ex3.CriticalSection" />
+      <module name="pcd_assignment4_ex3.main" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="assignment4.ex3.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration default="true" type="JetRunConfigurationType">
       <module name="pcd_assignment4_es3" />
       <method v="2">
@@ -12,5 +58,13 @@
       <option name="filePath" />
       <method v="2" />
     </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.CriticalSection" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="TaskManager">
+    <servers />
   </component>
 </project>

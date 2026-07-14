@@ -24,5 +24,6 @@ tasks.register<JavaExec>("runClient") {
     group = "application"
     description = "Run program A"
     classpath = sourceSets["main"].runtimeClasspath
-    mainClass.set("assignment4.ex3.ClientImpl")
+    mainClass.set("assignment4.ex3.CriticalSection")
+    //mainClass.set("assignment4.ex3.Subscriber")
 }

@@ -7,9 +7,9 @@ import com.rabbitmq.client.DeliverCallback;
 
 import java.nio.charset.StandardCharsets;
 
-public class ClientImpl implements Client {
+public class Subscriber {
 
-    private static final String QUEUE_NAME = "A";
+    private static final String QUEUE_NAME = "CriticalSub";
 
     static void main(String[] args) throws Exception {
         boolean first = args.length == 1 && Boolean.parseBoolean(args[0]);
@@ -20,7 +20,7 @@ public class ClientImpl implements Client {
         Connection connection = factory.newConnection();
         Channel channel = connection.createChannel();
 
-        channel.queueDeclare(QUEUE_NAME, true, false, false, null);
+        channel.queueDeclare(QUEUE_NAME, true, false, true, null);
 
         if (first) {
             channel.basicPublish("", QUEUE_NAME, null, Integer.toString(1).getBytes(StandardCharsets.UTF_8));
@@ -29,7 +29,6 @@ public class ClientImpl implements Client {
         System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
 
         DeliverCallback deliverCallback = (_, delivery) -> {
-            long deliveryTag = delivery.getEnvelope().getDeliveryTag();
             int value = Integer.parseInt(new String(delivery.getBody(), StandardCharsets.UTF_8));
 
             System.out.println(" [x] Received token " + value + " by thread: " + Thread.currentThread().getName());
@@ -45,14 +44,9 @@ public class ClientImpl implements Client {
             int next = value + 1;
             channel.basicPublish("", QUEUE_NAME, null, Integer.toString(next).getBytes(StandardCharsets.UTF_8));
             System.out.println(" [x] Sent token " + next);
-
-            channel.basicAck(deliveryTag, false);
         };
 
-        channel.basicQos(1);  // un solo messaggio non-ackato per consumer alla volta
-
-        boolean autoAck = false;//se crasha non toglie il messaggio
-        String consumerTag = channel.basicConsume(QUEUE_NAME, autoAck, deliverCallback, _ -> {
+        String consumerTag = channel.basicConsume(QUEUE_NAME, true, deliverCallback, _ -> {
         });
 
         System.out.println("Consumer configured - tag: " + consumerTag);
